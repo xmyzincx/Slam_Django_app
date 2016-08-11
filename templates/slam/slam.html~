@@ -1,0 +1,84 @@
+## mako
+<%!
+from django.utils.translation import ugettext as _
+%>
+<%namespace name='static' file='/static_content.html'/>
+<%namespace name="script_survey" file="script_survey.js"/>
+<%namespace name="eda_da" file="eda_da_chart.js"/>
+<%namespace name="script_gauges" file="script_gauges.js"/>
+<%inherit file="/main.html" />
+
+<%block name="bodyclass">view-in-course</%block>
+<%block name="pagetitle">${_("Dashboard")}</%block>
+
+<%block name="headextra">
+  <%static:css group='style-course-vendor'/>
+  <%static:css group='style-course'/>
+
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <!-- Load the Visualization API and the charts packages. -->
+  <script>
+    google.charts.load('current', {'packages':['corechart', 'gauge']});
+  </script>
+
+  <script type="text/javascript"> ${script_gauges.body(gauge_json, "drawChart1")} </script>
+## TODO more elegant with a mako for
+  <script type="text/javascript"> ${script_survey.body(survey_json[0], "drawChart2", "div2", "Meidän ryhmän toiminta")} </script>
+  <script type="text/javascript"> ${script_survey.body(survey_json[1], "drawChart3", "div3", "Meidän tieto työskentelystä")} </script>
+  <script type="text/javascript"> ${script_survey.body(survey_json[2], "drawChart4", "div4", "Meidän motivaatio")} </script>
+  <script type="text/javascript"> ${script_survey.body(survey_json[3], "drawChart5", "div5", "Meidän tunnetila")} </script>
+  <script type="text/javascript"> ${eda_da.body(eda_da_json, "drawChart6", "div6", "Directional agreement")} </script>
+
+</%block>
+
+<%include file="/slam/course_navigation.html" args="active_page='slam'" />
+
+<div class="container">
+  <div class="profile-wrapper">
+
+    <div class="course-info">
+      % if staff_access and studio_url is not None:
+        <div class="wrap-instructor-info">
+          <a class="instructor-info-action studio-view" href="${studio_url}">${_("View Grading in studio")}</a>
+        </div>
+      % endif
+
+      <header>
+        <h1 id="dashboard_headline">${_("'{username}', here's your collaborative learning dashboard").format(username=user.username)}</h1>
+      </header>
+
+      <!--Div that will hold the charts-->
+      <div class="chapters">
+<%doc>        <!-- Test section -->
+        <section>
+          <h2>${_("TEST. survey is {block_id} and \n {eda}").format(block_id=eda_da_hardcoded, eda=eda_da_json)}</h2>
+          <script type="text/javascript"> console.log(${eda_da_hardcoded}+'\n'+${eda_da_json}); </script>
+          <div id="per_problem_time" style='float:left; width:600; height:350'> </div>
+        </section>
+</%doc>
+        <!-- Latest survey values in gauges-->
+        <section>
+          <h2 style="vertical-align:top;text-align:left;; float:left">Meidän ryhmän tilanne</h2>
+          <div id="gauges_div" style='float:left; width:700; height:500'> </div>
+        </section>
+
+        <!-- All survey values -->
+        <section>
+          <h2 style="vertical-align:top; text-align:left">Meidän ryhmän tilanteen kehittyminen</h2>
+## TODO more elegant with a mako for
+          <div id="div2" style='float:left; width:700; height:500'> </div>
+          <div id="div3" style='float:left; width:700; height:500'> </div>
+          <div id="div4" style='float:left; width:700; height:500'> </div>
+          <div id="div5" style='float:left; width:700; height:500'> </div>
+        </section>
+
+<%doc>        <!-- EDA directional agreement values -->
+        <section>
+          <h2 style="vertical-align:top;text-align:left">Fysiologinen aktiivisuus</h2>
+          <div id="div6" style='float:left; width:"100%"; height:600'> </div>
+        </section>
+</%doc>
+      </div>
+    </div>
+  </div>
+</div>

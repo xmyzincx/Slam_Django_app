@@ -1,0 +1,12 @@
+"""Defines the URL routes for this app."""
+"""Adapted from the teams Django app"""
+
+from django.conf.urls import patterns, url
+from django.contrib.auth.decorators import login_required
+
+from .views import SlamDashboardView
+
+urlpatterns = patterns(
+    'slam.views',
+    url(r"^/$", login_required(SlamDashboardView.as_view()), name="slam_dashboard")
+)
